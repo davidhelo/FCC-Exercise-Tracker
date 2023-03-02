@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
-// create new user form > POST /api/users
+// create new USER form > POST /api/users
 app.use('/api/users', bodyParser.urlencoded({extended: false}));
 
 function newUserHandler (req, res) {
@@ -36,7 +36,20 @@ function newUserHandler (req, res) {
 
 app.post('/api/users', newUserHandler);
 
-// add excercise form > POST /api/users/:_id/exercises
+function retrieveUsersHandler (req, res){
+  userModel.find({}).select('username _id')
+    .then((data) => {
+      res.json(data);
+    })
+  .catch((error) => {
+      console.log(error);
+      res.send(error);
+  });
+};
+
+app.get('/api/users', retrieveUsersHandler);
+
+// add EXERCISE form > POST /api/users/:_id/exercises
 
 
 // API > GET /api/users/:_id/logs?[from][&to][&limit]
