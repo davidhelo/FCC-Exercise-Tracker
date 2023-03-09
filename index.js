@@ -48,7 +48,7 @@ function retrieveUsersHandler (req, res){
 
 app.get('/api/users', retrieveUsersHandler);
 
-// add EXERCISE form > POST /api/users/:_id/exercises
+// add EXERCISE form > POST /api/users/:_id/exercises *****************************
 app.use('/api/users/:_id/exercises', bodyParser.urlencoded({extended: false}));
 
 function exercisesHandler(req, res) {
@@ -68,7 +68,7 @@ function exercisesHandler(req, res) {
         // set current date if a date not provided
         console.log(`date: ${req.body.date}`);
         let dateToRegister = undefined;
-        if (req.body.date == "") {
+        if (req.body.date === '') {
           dateToRegister = new Date(Date.now());
         } else {
           dateToRegister = new Date(req.body.date);
@@ -109,7 +109,61 @@ function exercisesHandler(req, res) {
 };
 
 app.post('/api/users/:_id/exercises', exercisesHandler);
+// **************************************************
+// api/users/:_id/logs
 
+function logsHandler(req, res){
+  console.log(`Id requested: ${req.params._id}`);
+  let userId = req.params._id;
+  userModel.findById({ "_id": userId })
+  .select('username')
+  .then((dataLogs) => {
+    // if no document found it returns null
+    if (dataLogs == null) { res.send("user not found"); }
+    console.log("Username found: ");
+    console.log(dataLogs);
+    // query to count documents with the user name found
+    let documentsCount = null;
+    exerciseModel.find({ username: dataLogs.username })
+      .countDocuments({})
+      .then((count) => { 
+        documentsCount = count; 
+        console.log(`Dcouments counted: ${documentsCount}`);
+        
+        // query to get all the logs with user name found
+        exerciseModel.find({ username: dataLogs.username })
+          .select('-_id description duration date')
+          .then((dataLogsExercises) => {
+            console.log(`Exercises found for id: ${userId}`);
+            let logResponse = {
+                username: dataLogs.username,
+                count: documentsCount,
+                _id: dataLogs._id,
+                log: dataLogsExercises.map(log => { // it maps the array to format the date
+                  return {
+                        description: log.description,
+                        duration: log.duration,
+                        date: log.date.toDateString().split('T')[0] 
+                  };
+                })
+              };
+            console.log(logResponse);
+            res.json(logResponse);
+          })
+          .catch((errLogsExercises) => {
+            console.log(errLogsExercises);
+            res.send(errLogsExercises);
+          });
+      })
+      .catch((errCount) => { console.log(errCount) });
+  })
+  .catch((errLogs) => {
+    console.log(errLogs);
+    res.send(errLogs);
+  });
+};
+
+app.get('/api/users/:_id/logs', logsHandler);
 // API > GET /api/users/:_id/logs?[from][&to][&limit]
 
 
