@@ -66,20 +66,19 @@ function exercisesHandler(req, res) {
         console.log("user id not found");
       } else {
         // set current date if a date not provided
-        console.log(`date: ${req.body.date}`);
         let dateToRegister = undefined;
         if (req.body.date === '') {
           dateToRegister = new Date(Date.now());
         } else {
           dateToRegister = new Date(req.body.date);
         }
-
+        
         //Create new exercise model instance to save
         let newExercise = new exerciseModel({
           username: dataUser.username,
           description: req.body.description,
           duration: parseInt(req.body.duration),
-          date: dateToRegister.toDateString()
+          date: dateToRegister
         });
 
         // save document
@@ -89,7 +88,7 @@ function exercisesHandler(req, res) {
               username: dataExercise.username,
               description: dataExercise.description,
               duration: dataExercise.duration,
-              date: dataExercise.date.toDateString().split('T')[0],
+              date: dataExercise.date.toDateString(),
               "_id": dataExercise._id
             };
             console.log("Exercise registered with data:");
