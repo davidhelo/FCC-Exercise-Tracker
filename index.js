@@ -33,9 +33,7 @@ function newUserHandler (req, res) {
     });
 };
 
-app.post('/api/users', newUserHandler);
-
-function retrieveUsersHandler (req, res){
+function retrieveAllUsersHandler (req, res){
   userModel.find({}).select('username _id')
     .then((data) => {
       res.json(data);
@@ -46,16 +44,20 @@ function retrieveUsersHandler (req, res){
   });
 };
 
-app.get('/api/users', retrieveUsersHandler);
+app.post('/api/users', newUserHandler);
+app.get('/api/users', retrieveAllUsersHandler);
 
 // add EXERCISE form > POST /api/users/:_id/exercises *****************************
 app.use('/api/users/:_id/exercises', bodyParser.urlencoded({extended: false}));
 
 function exercisesHandler(req, res) {
   //DELETE ALL EXERCISES -----------------------------------------
-  /*exerciseModel.deleteMany({})
-    .then((dataDelete) => {console.log(`All exercises deleted: ${dataDelete}`)})
-    .catch((errDelete) => {console.log(errDelete)});*/
+  /*
+  //userModel.deleteMany({}) // uncomment this to delete all users
+  //exerciseModel.deleteMany({}) // uncomment this to delete all exercises
+    .then((dataDelete) => {console.log(`All data deleted: ${dataDelete}`)})
+    .catch((errDelete) => {console.log(errDelete)});
+    */
   //-------------------------------------------------------------
   
   // get username, find by id
@@ -113,6 +115,8 @@ app.post('/api/users/:_id/exercises', exercisesHandler);
 
 function logsHandler(req, res){
   console.log(`Id requested: ${req.params._id}`);
+  console.log(req.query.from);
+  console.log(req.query.to);
   let userId = req.params._id;
   userModel.findById({ "_id": userId })
   .select('username')
@@ -131,7 +135,9 @@ function logsHandler(req, res){
         
         // query to get all the logs with user name found
         exerciseModel.find({ username: dataLogs.username })
+          //.where('date').gte(req.query.from).lte(req.query.to)
           .select('-_id description duration date')
+          //.limit(parseInt(req.query.limit))
           .then((dataLogsExercises) => {
             console.log(`Exercises found for id: ${userId}`);
             let logResponse = {
@@ -142,7 +148,7 @@ function logsHandler(req, res){
                   return {
                         description: log.description,
                         duration: log.duration,
-                        date: log.date.toDateString().split('T')[0] 
+                        date: log.date.toDateString() 
                   };
                 })
               };
@@ -163,8 +169,8 @@ function logsHandler(req, res){
 };
 
 app.get('/api/users/:_id/logs', logsHandler);
-// API > GET /api/users/:_id/logs?[from][&to][&limit]
 
+// API > GET /api/users/:_id/logs?[from][&to][&limit]
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
