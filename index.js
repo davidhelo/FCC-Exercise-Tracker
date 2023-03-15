@@ -21,15 +21,19 @@ function newUserHandler (req, res) {
   
   newUser.save()
     .then((data) => {
-      console.log(data);
+      //console.log(data);
+      console.log({
+        username: data.username,
+        _id: data._id.toString()
+      });
       res.json({
         username: data.username,
-        _id: data._id
+        _id: data._id.toString()
       });
     })
     .catch((error) => {
-      console.log(error);
-      res.send(error);
+      console.log(`Error in newUserHandler, message: ${error.message}`);
+      res.send(error.message);
     });
 };
 
@@ -39,8 +43,8 @@ function retrieveAllUsersHandler (req, res){
       res.json(data);
     })
   .catch((error) => {
-      console.log(error);
-      res.send(error);
+      console.log(`Error in retriveAllUser, message: ${error.message}`);
+      res.send(error.message);
   });
 };
 
@@ -61,7 +65,10 @@ function exercisesHandler(req, res) {
   //-------------------------------------------------------------
   
   // get username, find by id
-  userModel.findById({ _id: req.body[':_id'] })
+  console.log(req.body);
+  console.log(req.params);
+  let userIdForExercise = req.body._id ? req.body._id : req.params._id;
+  userModel.findById({ _id: userIdForExercise })
     .then((dataUser) => {
       console.log(dataUser);
       if (dataUser == null) {
@@ -69,7 +76,7 @@ function exercisesHandler(req, res) {
       } else {
         // set current date if a date not provided
         let dateToRegister = undefined;
-        if (req.body.date === '') {
+        if (req.body.date == '' || req.body.date == undefined) {
           dateToRegister = new Date(Date.now());
         } else {
           dateToRegister = new Date(req.body.date);
@@ -91,21 +98,21 @@ function exercisesHandler(req, res) {
               description: dataExercise.description,
               duration: dataExercise.duration,
               date: dataExercise.date.toDateString(),
-              "_id": dataExercise._id
+              "_id": userIdForExercise
             };
             console.log("Exercise registered with data:");
             console.log(exerciseRegistered);
             res.json(exerciseRegistered);
           })
           .catch((errExercise) => {
-            console.log(errExercise);
-            res.send(errExercise);
+            console.log(`Error in save new exercise, message: ${errExercise.message}`);
+            res.send(errExercise.message);
           })
         }
     })
     .catch((error) => {
-        console.log(error);
-        res.send(error);
+        console.log(`Error in findUserById to register exercise, message: ${error.message}`);
+        res.send(error.message);
     }); 
 };
 
