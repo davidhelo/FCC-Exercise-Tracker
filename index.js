@@ -23,7 +23,7 @@ function newUserHandler (req, res) {
     .then((data) => {
       console.log(data);
       res.json({
-        usename: data.username,
+        username: data.username,
         _id: data._id
       });
     })
