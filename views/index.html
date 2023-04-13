@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Exercise Tracker | freeCodeCamp</title>
-    <link rel="shortcut icon" href="https://cdn.freecodecamp.org/universal/favicons/favicon.ico"  type="image/x-icon" />
+    <title>Exercise Tracker | David Hernandez | freeCodeCamp</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css" />
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
@@ -16,6 +15,7 @@
         <input id="uname" type="text" name="username" placeholder="username" />
         <input type="submit" value="Submit" />
       </form>
+    </br>
       <form id="exercise-form" method="post">
         <h3>Add exercises</h3>
         <p><code>POST /api/users/:_id/exercises</code></p>
@@ -27,7 +27,7 @@
       </form>
       <p>
         <strong>GET user's exercise log: </strong>
-        <code>GET /api/users/:_id/logs?[from][&amp;to][&amp;limit]</code>
+        <p></p><code>GET /api/users/:_id/logs?[from][&amp;to][&amp;limit]</code></p>
       </p>
       <p><strong>[ ]</strong> = optional</p>
       <p><strong>from, to</strong> = dates (yyyy-mm-dd); <strong>limit</strong> = number</p>
@@ -42,5 +42,10 @@
         exerciseForm.submit();
       });
     </script>
+    <div class="footer">
+      <p>
+        By <a href="https://github.com/davidhelo">David Hernandez</a>
+      </p>
+    </div>
   </body>
 </html>
